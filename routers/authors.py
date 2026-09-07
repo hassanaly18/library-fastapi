@@ -70,3 +70,15 @@ def update_author(author_id: int, db: Session = Depends(get_db), current_user = 
     return {
         "message": "Author deleted successfully"
     }
+
+@router.get("/{author_id}/books", response_model=list[schemas.BookResponse])
+def get_author_books(author_id: int, db: Session = Depends(get_db)):
+    author = db.query(models.Author).filter(models.Author.id == author_id).first()
+
+    if author is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Author not found"
+        )
+    
+    return author.books 
