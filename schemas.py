@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 class UserCreate(BaseModel):
     username: str 
@@ -77,3 +78,32 @@ class CategoryResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class BorrowingCreate(BaseModel):
+    book_id: int
+    due_date: datetime
+
+class BorrowingResponse(BaseModel):
+    id: int
+    user_id: int
+    book_id: int
+    borrow_date: datetime
+    due_date: datetime
+    return_date: datetime | None = None
+    status: str
+    
+    class Config:
+        from_attributes = True 
+
+class BorrowingWithBook(BaseModel):
+    id: int
+    user_id: int
+    book_id: int
+    borrow_date: datetime
+    due_date: datetime
+    return_date: datetime | None = None
+    status: str
+    book: BookResponse
+    
+    class Config:
+        from_attributes = True 
