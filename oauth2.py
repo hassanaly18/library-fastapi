@@ -73,6 +73,18 @@ def require_admin(current_user = Depends(get_current_user)):
     
     return current_user
 
+def require_librarian(current_user = Depends(get_current_user)):
+    if current_user.role not in ["librarian", "admin"]:
+        raise HTTPException(status_code=403, detail="Librarian access required")
+    
+    return current_user
+
+def require_member(current_user = Depends(get_current_user)):
+    if current_user.role not in ["member", "librarian", "admin"]:
+        raise HTTPException(status_code=403, detail="Valid user role required")
+    
+    return current_user
+
 def require_roles(allowed_roles: list[str]):
     def role_checker(current_user = Depends(get_current_user)):
         if current_user.role not in allowed_roles:
