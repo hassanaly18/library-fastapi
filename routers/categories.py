@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=schemas.CategoryResponse)
-def create_category(category: schemas.CategoryCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def create_category(category: schemas.CategoryCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     new_category = models.Category(
         name=category.name,
         description=category.description
@@ -40,7 +40,7 @@ def get_category(category_id: int, db: Session = Depends(get_db), current_user =
     return category
 
 @router.put("/{category_id}", response_model=schemas.CategoryResponse)
-def update_category(category_id: int, category_data: schemas.CategoryCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def update_category(category_id: int, category_data: schemas.CategoryCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     category = db.query(models.Category).filter(models.Category.id == category_id).first()
 
     if category is None:
@@ -57,7 +57,7 @@ def update_category(category_id: int, category_data: schemas.CategoryCreate, db:
     return category
 
 @router.delete("/{category_id}")
-def delete_category(category_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def delete_category(category_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     category = db.query(models.Category).filter(models.Category.id == category_id).first()
 
     if category is None:

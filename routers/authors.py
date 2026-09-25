@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=schemas.AuthorResponse)
-def create_author(author: schemas.AuthorCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def create_author(author: schemas.AuthorCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     new_author = models.Author(
         name= author.name,
         bio=author.bio
@@ -39,7 +39,7 @@ def get_author(author_id: int, db: Session = Depends(get_db), current_user = Dep
     return author
 
 @router.put("/{author_id}", response_model=schemas.AuthorResponse)
-def update_author(author_id: int, author_data: schemas.AuthorCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def update_author(author_id: int, author_data: schemas.AuthorCreate, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     author = db.query(models.Author).filter(models.Author.id == author_id).first()
 
     if author is None:
@@ -56,7 +56,7 @@ def update_author(author_id: int, author_data: schemas.AuthorCreate, db: Session
     return author
 
 @router.delete("/{author_id}")
-def update_author(author_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def delete_author(author_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     author = db.query(models.Author).filter(models.Author.id == author_id).first()
 
     if author is None:

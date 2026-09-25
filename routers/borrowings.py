@@ -46,13 +46,13 @@ def borrow_book(borrowing: schemas.BorrowingCreate, db: Session=Depends(get_db),
     return new_borrowing
 
 @router.get("/", response_model=list[schemas.BorrowingWithBook])
-def get_all_borrowings(db: Session=Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def get_all_borrowings(db: Session=Depends(get_db), current_user = Depends(oauth2.require_librarian)):
     borrowings = db.query(models.Borrowing).all()
 
     return borrowings
 
 @router.get("/my", response_model=list[schemas.BorrowingWithBook])
-def get_my_borrowings(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def get_my_borrowings(db: Session = Depends(get_db), current_user = Depends(oauth2.require_member)):
     borrowings = db.query(models.Borrowing).filter(models.Borrowing.user_id == current_user.id).all()
     return borrowings
 
@@ -70,7 +70,7 @@ def get_borrowing(borrowing_id: int, db: Session = Depends(get_db), current_user
 #return routes
 
 @router.put("/{borrowing_id}/return")
-def return_book(borrowing_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+def return_book(borrowing_id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.require_member)):
     borrowing = db.query(models.Borrowing).filter(models.Borrowing.id == borrowing_id).first()
 
     if borrowing is None:
