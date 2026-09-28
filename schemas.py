@@ -116,3 +116,58 @@ class BorrowingWithBook(BaseModel):
     
     class Config:
         from_attributes = True 
+
+class PaginationMeta(BaseModel): 
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class PaginatedBookResponse(BaseModel):
+    items: list[BookResponse]
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class PaginatedAuthorResponse(BaseModel):
+    items: list[AuthorResponse]
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class PaginatedCategoryResponse(BaseModel):
+    items: list[CategoryResponse]
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class PaginatedBorrowingResponse(BaseModel):
+    items: list[BorrowingResponse]
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class PaginatedUserResponse(BaseModel):
+    items: list[UserResponse]
+    page: int
+    limit: int 
+    total: int
+    total_pages: int 
+
+class DashboardResponse(BaseModel):
+    role: UserRole
+    total_books: int
+    total_authors: int 
+    total_categories: int
+
+    total_users: int |None=None
+
+    total_borrowings: int 
+    active_borrowings: int
+    overdue_borrowings: int 
+    returned_borrowings: int 
+    available_books: int

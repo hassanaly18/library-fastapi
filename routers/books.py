@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 import models
 import schemas
@@ -10,10 +11,53 @@ router = APIRouter(
     tags=["Books"]
 )
 
-@router.get("/", response_model=list[schemas.BookResponse])
-def get_books(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
-    books = db.query(models.Book).all()
-    return books
+# @router.get("/", response_model=list[schemas.BookResponse])
+# def get_books(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
+#     books = db.query(models.Book).all()
+#     return books
+
+@router.get("/", response_model=schemas.PaginatedBookResponse)
+def get_books(q: str | None = Query(default=None, description="Search by title"), 
+author_id: int | None = Query(default=None), 
+category_id: int | None = Query(default=None),
+page: int = Query(default=1, ge=1),
+limit: int = Query(default=10, ge=1, le=25),
+db: Session = Depends(get_db), 
+current_user = Depends(oauth2.get_current_user)):
+    query = (db.query(models.Book).join(models.Author).join(models.Category))
+
+    if q:
+        search = f"%{q}%"
+
+        query = query.filter(
+            or_(
+                models.Book.title.ilike(search)
+            )
+        )
+    
+    if author_id is not None:
+        query = query.filter(
+            models.Book.author_id == author_id
+        )
+
+    if category_id is not None:
+        query = query.filter(
+            models.Category.category_id == category_id
+        )
+    
+    total = query.count()
+    offset = (page - 1) * limit
+
+    books = (query.offset(offset).limit(limit).all())
+    total_pages = (total + limit - 1) // limit
+
+    return {
+        "items": books,
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "total_pages": total_pages
+    }
 
 @router.delete("/{book_id}")
 def delete_book(book_id: int, current_user = Depends(oauth2.require_librarian)):
