@@ -171,3 +171,20 @@ class DashboardResponse(BaseModel):
     overdue_borrowings: int 
     returned_borrowings: int 
     available_books: int
+
+class PopularBookStat(BaseModel):
+    book_id: int
+    title: str
+    borrow_count: int 
+
+class LibraryStatisticsResponse(BaseModel):
+    total_books: int
+    total_authors: int
+    total_categories: int
+    total_users: int 
+    total_borrowings: int
+    active_borrowings: int
+    returned_borrowings: int
+    overdue_borrowings: int
+    available_books: int
+    most_borrowed_books: list[PopularBookStat]
