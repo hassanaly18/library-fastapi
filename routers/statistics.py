@@ -47,6 +47,7 @@ def get_statistics(db: Session = Depends(get_db), current_user = Depends(oauth2.
             "title": book.title,
             "borrow_count": book.borrow_count
         }
+        
         for book in popular_books
     ]
 
